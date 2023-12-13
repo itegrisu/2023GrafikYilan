@@ -58,13 +58,13 @@ public class Board extends JPanel implements ActionListener {
 
     private void loadImages() {
 
-        ImageIcon iid = new ImageIcon("C:\\Users\\ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png");
+        ImageIcon iid = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png");
         ball = iid.getImage();
 
-        ImageIcon iia = new ImageIcon("C:\\Users\\ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png");
+        ImageIcon iia = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png");
         apple = iia.getImage();
 
-        ImageIcon iih = new ImageIcon("C:\\Users\\ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png");
+        ImageIcon iih = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png");
         head = iih.getImage();
     }
 
@@ -114,7 +114,7 @@ public class Board extends JPanel implements ActionListener {
 
     private void gameOver(Graphics g) {
 
-        String msg = "Game Over";
+        String msg = "Oyun Bitti";
         Font small = new Font("Helvetica", Font.BOLD, 14);
         FontMetrics metr = getFontMetrics(small);
 
