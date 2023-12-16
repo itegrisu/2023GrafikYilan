@@ -15,11 +15,11 @@ import javax.swing.Timer;
 
 public class Board extends JPanel implements ActionListener {
 
-    private final int B_WIDTH = 800;
-    private final int B_HEIGHT = 800;
+    private final int B_WIDTH = 300;
+    private final int B_HEIGHT = 300;
     private final int DOT_SIZE = 10;
     private final int ALL_DOTS = 900;
-    private final int RAND_POS = 79;
+    private final int RAND_POS = 29;
     private final int DELAY = 100;
 
     private final int x[] = new int[ALL_DOTS];
@@ -58,13 +58,13 @@ public class Board extends JPanel implements ActionListener {
 
     private void loadImages() {
 
-        ImageIcon iid = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png");
+        ImageIcon iid = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png");
         ball = iid.getImage();
 
-        ImageIcon iia = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png");
+        ImageIcon iia = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png");
         apple = iia.getImage();
 
-        ImageIcon iih = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png");
+        ImageIcon iih = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png");
         head = iih.getImage();
     }
 
@@ -166,19 +166,19 @@ public class Board extends JPanel implements ActionListener {
         }
 
         if (y[0] >= B_HEIGHT) {
-            inGame = false;
+            y[0] = 0;
         }
 
         if (y[0] < 0) {
-            inGame = false;
+            y[0] = B_HEIGHT;
         }
 
         if (x[0] >= B_WIDTH) {
-            inGame = false;
+            x[0] = 0;
         }
 
         if (x[0] < 0) {
-            inGame = false;
+            x[0] = B_WIDTH;
         }
 
         if (!inGame) {
