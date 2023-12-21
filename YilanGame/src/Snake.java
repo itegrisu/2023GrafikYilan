@@ -5,7 +5,6 @@ import javax.swing.JFrame;
 public class Snake extends JFrame { // Snake sınıfı, JFrame sınıfından türetiliyor
 
     public Snake() { // Snake sınıfının kurucu metodu
-
         initUI(); // Pencereyi başlatan metodu çağırır
     }
 
