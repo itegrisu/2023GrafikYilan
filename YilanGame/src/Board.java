@@ -32,6 +32,9 @@ public class Board extends JPanel implements ActionListener {
     private int apple_x; // Yemin x koordinatı
     private int apple_y; // Yemin y koordinatı
 
+    private int pineApple_x; // Ananasın x koordinatı
+    private int pineApple_y; // Ananasın y koordinatı
+
     private boolean leftDirection = false; // Yılanın sola dönüş durumu
     private boolean rightDirection = true; // Yılanın sağa dönüş durumu
     private boolean upDirection = false; // Yılanın yukarı dönüş durumu
@@ -41,6 +44,8 @@ public class Board extends JPanel implements ActionListener {
     private Timer timer; // Zamanlayıcı nesnesi
     private Image ball; // Yılanın her bir parçasının resmi
     private Image apple; // Yemin resmi
+
+    private Image pineApple; // Ananasın resmi
     private Image head; // Yılanın başının resmi
     private Image bgImage;//BU SATIRI DAVUT EKLEDİ.
 
@@ -62,17 +67,20 @@ public class Board extends JPanel implements ActionListener {
     private void loadImages() { // Resimleri yükleyen metod
 
         //BU SATIRI DAVUT EKLEDİ
-        ImageIcon iib= new ImageIcon("C:\\Users\\DAVUTCAN\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources\\background.jpg");
+        ImageIcon iib= new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources\\background.jpg");
         bgImage= iib.getImage();
 
 
-        ImageIcon iid = new ImageIcon("C:\\Users\\DAVUTCAN\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png"); // Yılanın her bir parçasının resmini yükler
+        ImageIcon iid = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png"); // Yılanın her bir parçasının resmini yükler
         ball = iid.getImage();
 
-        ImageIcon iia = new ImageIcon("C:\\Users\\DAVUTCAN\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png"); // Yemin resmini yükler
+        ImageIcon iia = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png"); // Yemin resmini yükler
         apple = iia.getImage();
 
-        ImageIcon iih = new ImageIcon("C:\\Users\\DAVUTCAN\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png"); // Yılanın başının resmini yükler
+        ImageIcon iip = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/pineApple.png"); // Yemin resmini yükler
+        pineApple = iip.getImage();
+
+        ImageIcon iih = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png"); // Yılanın başının resmini yükler
         head = iih.getImage();
 
 
@@ -88,6 +96,24 @@ public class Board extends JPanel implements ActionListener {
         }
 
         locateApple(); // Yemin konumunu belirleyen metodu çağırır
+        locatePineApple();
+
+        // Timer'ı sadece locatePineApple metodu için ekliyoruz.
+        Timer pineAppleTimer = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (inGame) {
+                    locatePineApple();
+                }
+            }
+        });
+        pineAppleTimer.start();
+
+        timer = new Timer(DELAY, this);
+        timer.start();
+
+
+
 
         timer = new Timer(DELAY, this); // Zamanlayıcı nesnesini oluşturur ve gecikme süresi ve dinleyici olarak Board sınıfını verir
         timer.start(); // Zamanlayıcıyı başlatır
@@ -105,6 +131,8 @@ public class Board extends JPanel implements ActionListener {
         if (inGame) { // Eğer oyun devam ediyorsa
 
             g.drawImage(apple, apple_x, apple_y, this); // Yemin resmini yeminin konumunda çizer
+
+            g.drawImage(pineApple, pineApple_x, pineApple_y, this); // Yemin resmini yeminin konumunda çizer
 
             String msg = "Skor: " + score; // Skoru gösteren mesaj
             Font small = new Font("Helvetica", Font.BOLD, 14); // Mesajın fontu
@@ -150,6 +178,16 @@ public class Board extends JPanel implements ActionListener {
             dots++; // Yılanın uzunluğunu arttırır
             score += 10;    //BU SATIRI DAVUT EKLEDİ
             locateApple(); // Yeni bir yem konumu belirler
+        }
+    }
+
+    private void checkPineApple() { // Yılanın yemi yiyip yemediğini kontrol eden metot
+
+        if ((x[0] == pineApple_x) && (y[0] == pineApple_y)) { // Eğer yemi yemişse
+
+            dots+=3; // Yılanın uzunluğunu arttırır
+            score +=30;    //BU SATIRI DAVUT EKLEDİ
+            locatePineApple(); // Yeni bir yem konumu belirler
         }
     }
 
@@ -216,6 +254,14 @@ public class Board extends JPanel implements ActionListener {
         r = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
         apple_y = ((r * DOT_SIZE)); // Yemin y koordinatını, yılanın boyutuna göre ayarlar
     }
+    private void locatePineApple() { // Yemin konumunu rastgele belirleyen metot
+
+        int n = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
+        pineApple_x = ((n * DOT_SIZE)); // Yemin x koordinatını, yılanın boyutuna göre ayarlar
+
+        n = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
+        pineApple_y = ((n * DOT_SIZE)); // Yemin y koordinatını, yılanın boyutuna göre ayarlar
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) { // Zamanlayıcıdan gelen olaylara yanıt veren metot
@@ -223,6 +269,7 @@ public class Board extends JPanel implements ActionListener {
         if (inGame) { // Eğer oyun devam ediyorsa
 
             checkApple(); // Yılanın yemi yiyip yemediğini kontrol eden metodu çağırır
+            checkPineApple();
             checkCollision(); // Yılanın kendisine veya duvarlara çarpmasını kontrol eden metodu çağırır
             move(); // Yılanın hareket etmesini sağlayan metodu çağırır
         }
