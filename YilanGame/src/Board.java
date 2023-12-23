@@ -22,7 +22,7 @@ public class Board extends JPanel implements ActionListener {
     private final int DOT_SIZE = 10; // Yılanın her bir parçasının boyutu (piksel cinsinden)
     private final int ALL_DOTS = 900; // Yılanın maksimum uzunluğu (parça cinsinden)
     private final int RAND_POS = 29; // Yemin rastgele konumlandırılması için kullanılan sabit
-    private final int DELAY = 150; // Zamanlayıcının gecikme süresi (milisaniye cinsinden)
+    private final int DELAY = 200; // Zamanlayıcının gecikme süresi (milisaniye cinsinden)
     private int score;//BU SATIRI DAVUT EKLEDİ.
 
     private final int x[] = new int[ALL_DOTS]; // Yılanın x koordinatlarını tutan dizi
@@ -35,6 +35,8 @@ public class Board extends JPanel implements ActionListener {
     private int pineApple_x; // Ananasın x koordinatı
     private int pineApple_y; // Ananasın y koordinatı
 
+    private  int bomb_x;
+    private int bomb_y;
     private boolean leftDirection = false; // Yılanın sola dönüş durumu
     private boolean rightDirection = true; // Yılanın sağa dönüş durumu
     private boolean upDirection = false; // Yılanın yukarı dönüş durumu
@@ -48,6 +50,7 @@ public class Board extends JPanel implements ActionListener {
     private Image pineApple; // Ananasın resmi
     private Image head; // Yılanın başının resmi
     private Image bgImage;//BU SATIRI DAVUT EKLEDİ.
+    private Image bomb;
 
     public Board() { // Board sınıfının kurucu metodu
 
@@ -67,22 +70,24 @@ public class Board extends JPanel implements ActionListener {
     private void loadImages() { // Resimleri yükleyen metod
 
         //BU SATIRI DAVUT EKLEDİ
-        ImageIcon iib= new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources\\background.jpg");
+        ImageIcon iib= new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources\\background.jpg");
         bgImage= iib.getImage();
 
 
-        ImageIcon iid = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png"); // Yılanın her bir parçasının resmini yükler
+        ImageIcon iid = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png"); // Yılanın her bir parçasının resmini yükler
         ball = iid.getImage();
 
-        ImageIcon iia = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png"); // Yemin resmini yükler
+        ImageIcon iia = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png"); // Yemin resmini yükler
         apple = iia.getImage();
 
-        ImageIcon iip = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/pineApple.png"); // Yemin resmini yükler
+        ImageIcon iip = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/pineApple.png"); // Yemin resmini yükler
         pineApple = iip.getImage();
 
-        ImageIcon iih = new ImageIcon("C:\\Users\\Taha\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png"); // Yılanın başının resmini yükler
+        ImageIcon iih = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png"); // Yılanın başının resmini yükler
         head = iih.getImage();
 
+        ImageIcon iibomb = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/bomb.png"); // Yemin resmini yükler
+        bomb = iibomb.getImage();
 
     }
 
@@ -97,23 +102,30 @@ public class Board extends JPanel implements ActionListener {
 
         locateApple(); // Yemin konumunu belirleyen metodu çağırır
         locatePineApple();
-
+        locateBomb();
         // Timer'ı sadece locatePineApple metodu için ekliyoruz.
         Timer pineAppleTimer = new Timer(5000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (inGame) {
                     locatePineApple();
-                }
+                                    }
             }
         });
         pineAppleTimer.start();
 
+        Timer bombTimer = new Timer(10000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (inGame) {
+                    locateBomb();
+                }
+            }
+        });
+        bombTimer.start();
+
         timer = new Timer(DELAY, this);
         timer.start();
-
-
-
 
         timer = new Timer(DELAY, this); // Zamanlayıcı nesnesini oluşturur ve gecikme süresi ve dinleyici olarak Board sınıfını verir
         timer.start(); // Zamanlayıcıyı başlatır
@@ -133,6 +145,8 @@ public class Board extends JPanel implements ActionListener {
             g.drawImage(apple, apple_x, apple_y, this); // Yemin resmini yeminin konumunda çizer
 
             g.drawImage(pineApple, pineApple_x, pineApple_y, this); // Yemin resmini yeminin konumunda çizer
+
+            g.drawImage(bomb, bomb_x, bomb_y, this); // Yemin resmini yeminin konumunda çizer
 
             String msg = "Skor: " + score; // Skoru gösteren mesaj
             Font small = new Font("Helvetica", Font.BOLD, 14); // Mesajın fontu
@@ -164,7 +178,7 @@ public class Board extends JPanel implements ActionListener {
         Font small = new Font("İtalic", Font.BOLD, 20); // Mesajın fontu
         FontMetrics metr = getFontMetrics(small); // Mesajın metrikleri
 
-        g.setColor(Color.red); // Mesajın rengi
+        g.setColor(Color.black); // Mesajın rengi
         g.setFont(small); // Mesajın fontu
         g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2); // Mesajı ekrana yazar
         g.drawString(m_score, (B_WIDTH - metr.stringWidth(m_score)) / 2, (B_HEIGHT / 2)+20); // Mesajı ekrana yazar
@@ -187,6 +201,14 @@ public class Board extends JPanel implements ActionListener {
 
             dots+=3; // Yılanın uzunluğunu arttırır
             score +=30;    //BU SATIRI DAVUT EKLEDİ
+            locatePineApple(); // Yeni bir yem konumu belirler
+        }
+    }
+
+    private void checkBomb() { // Yılanın yemi yiyip yemediğini kontrol eden metot
+
+        if ((x[0] == bomb_x) && (y[0] == bomb_y)) { // Eğer yemi yemişse
+            inGame =false;
             locatePineApple(); // Yeni bir yem konumu belirler
         }
     }
@@ -219,7 +241,7 @@ public class Board extends JPanel implements ActionListener {
 
         for (int z = dots; z > 0; z--) { // Yılanın her bir parçası için
 
-            if ((z > 4) && (x[0] == x[z]) && (y[0] == y[z])) { // Eğer baş, vücudun bir parçasına çarpmışsa
+            if ((z > 0) && (x[0] == x[z]) && (y[0] == y[z])) { // Eğer baş, vücudun bir parçasına çarpmışsa
                 inGame = false; // Oyunu bitirir
             }
         }
@@ -245,7 +267,6 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
-
     private void locateApple() { // Yemin konumunu rastgele belirleyen metot
 
         int r = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
@@ -262,7 +283,14 @@ public class Board extends JPanel implements ActionListener {
         n = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
         pineApple_y = ((n * DOT_SIZE)); // Yemin y koordinatını, yılanın boyutuna göre ayarlar
     }
+    private void locateBomb() { // Yemin konumunu rastgele belirleyen metot
 
+        int n = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
+        bomb_x = ((n * DOT_SIZE)); // Yemin x koordinatını, yılanın boyutuna göre ayarlar
+
+        n = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
+        bomb_y = ((n * DOT_SIZE)); // Yemin y koordinatını, yılanın boyutuna göre ayarlar
+    }
     @Override
     public void actionPerformed(ActionEvent e) { // Zamanlayıcıdan gelen olaylara yanıt veren metot
 
@@ -270,6 +298,7 @@ public class Board extends JPanel implements ActionListener {
 
             checkApple(); // Yılanın yemi yiyip yemediğini kontrol eden metodu çağırır
             checkPineApple();
+            checkBomb();
             checkCollision(); // Yılanın kendisine veya duvarlara çarpmasını kontrol eden metodu çağırır
             move(); // Yılanın hareket etmesini sağlayan metodu çağırır
         }
