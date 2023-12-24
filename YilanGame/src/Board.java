@@ -294,7 +294,6 @@ public class Board extends JPanel implements ActionListener {
         }
     }
     private void checkBomb() { // Yılanın yemi yiyip yemediğini kontrol eden metot
-
         if ((x[0] == bomb_x) && (y[0] == bomb_y)) { // Eğer yemi yemişse
             inGame =false;
             locatePineApple(); // Yeni bir yem konumu belirler
