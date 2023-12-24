@@ -17,11 +17,11 @@ import javax.swing.Timer;
 // Bu, Board'un bir grafik bileşen olduğu ve zamanlayıcıdan gelen olaylara yanıt verebileceği anlamına gelir.
 public class Board extends JPanel implements ActionListener {
 
-    private final int B_WIDTH = 400; // Oyun alanının genişliği (piksel cinsinden)
-    private final int B_HEIGHT = 400; // Oyun alanının yüksekliği (piksel cinsinden)
+    private final int B_WIDTH = 300; // Oyun alanının genişliği (piksel cinsinden)
+    private final int B_HEIGHT = 300; // Oyun alanının yüksekliği (piksel cinsinden)
     private final int DOT_SIZE = 10; // Yılanın her bir parçasının boyutu (piksel cinsinden)
     private final int ALL_DOTS = 900; // Yılanın maksimum uzunluğu (parça cinsinden)
-    private final int RAND_POS = 29; // Yemin rastgele konumlandırılması için kullanılan sabit
+    private final int RAND_POS = 19; // Yemin rastgele konumlandırılması için kullanılan sabit
     private final int DELAY = 200; // Zamanlayıcının gecikme süresi (milisaniye cinsinden)
     private int score;//BU SATIRI DAVUT EKLEDİ.
 
@@ -69,7 +69,6 @@ public class Board extends JPanel implements ActionListener {
 
     private void loadImages() { // Resimleri yükleyen metod
 
-        //BU SATIRI DAVUT EKLEDİ
         ImageIcon iib= new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources\\background.jpg");
         bgImage= iib.getImage();
 
@@ -77,16 +76,16 @@ public class Board extends JPanel implements ActionListener {
         ImageIcon iid = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png"); // Yılanın her bir parçasının resmini yükler
         ball = iid.getImage();
 
-        ImageIcon iia = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/apple.png"); // Yemin resmini yükler
+        ImageIcon iia = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/appleV2.jpg"); // Yemin resmini yükler
         apple = iia.getImage();
 
-        ImageIcon iip = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/pineApple.png"); // Yemin resmini yükler
+        ImageIcon iip = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/pineAppleV2.png"); // Yemin resmini yükler
         pineApple = iip.getImage();
 
         ImageIcon iih = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png"); // Yılanın başının resmini yükler
         head = iih.getImage();
 
-        ImageIcon iibomb = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/bomb.png"); // Yemin resmini yükler
+        ImageIcon iibomb = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/bombv2.jpg"); // Yemin resmini yükler
         bomb = iibomb.getImage();
 
     }
