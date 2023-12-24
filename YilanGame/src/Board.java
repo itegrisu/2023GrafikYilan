@@ -19,7 +19,7 @@ public class Board extends JPanel implements ActionListener {
     private final int DOT_SIZE = 10; // Yılanın her bir parçasının boyutu (piksel cinsinden)
     private final int ALL_DOTS = 900; // Yılanın maksimum uzunluğu (parça cinsinden)
     private final int RAND_POS = 19; // Yemin rastgele konumlandırılması için kullanılan sabit
-    private final int DELAY = 250; // Zamanlayıcının gecikme süresi (milisaniye cinsinden)
+    private final int DELAY = 100; // Zamanlayıcının gecikme süresi (milisaniye cinsinden)
     private int score;//BU SATIRI DAVUT EKLEDİ.
 
     private final int x[] = new int[ALL_DOTS]; // Yılanın x koordinatlarını tutan dizi
@@ -129,8 +129,6 @@ public class Board extends JPanel implements ActionListener {
         });
         bombTimer.start();
 
-        timer = new Timer(DELAY, this);
-        timer.start();
 
         timer = new Timer(DELAY, this); // Zamanlayıcı nesnesini oluşturur ve gecikme süresi ve dinleyici olarak Board sınıfını verir
         timer.start(); // Zamanlayıcıyı başlatır
