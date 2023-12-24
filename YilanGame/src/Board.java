@@ -1,17 +1,14 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.SourceDataLine;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import java.io.File;
 
 // Board sınıfı, JPanel sınıfından türetiliyor ve ActionListener arayüzünü uyguluyor.
 // Bu, Board'un bir grafik bileşen olduğu ve zamanlayıcıdan gelen olaylara yanıt verebileceği anlamına gelir.
@@ -22,7 +19,7 @@ public class Board extends JPanel implements ActionListener {
     private final int DOT_SIZE = 10; // Yılanın her bir parçasının boyutu (piksel cinsinden)
     private final int ALL_DOTS = 900; // Yılanın maksimum uzunluğu (parça cinsinden)
     private final int RAND_POS = 19; // Yemin rastgele konumlandırılması için kullanılan sabit
-    private final int DELAY = 200; // Zamanlayıcının gecikme süresi (milisaniye cinsinden)
+    private final int DELAY = 250; // Zamanlayıcının gecikme süresi (milisaniye cinsinden)
     private int score;//BU SATIRI DAVUT EKLEDİ.
 
     private final int x[] = new int[ALL_DOTS]; // Yılanın x koordinatlarını tutan dizi
@@ -51,45 +48,54 @@ public class Board extends JPanel implements ActionListener {
     private Image head; // Yılanın başının resmi
     private Image bgImage;//BU SATIRI DAVUT EKLEDİ.
     private Image bomb;
+    private int bytesRead;
 
     public Board() { // Board sınıfının kurucu metodu
 
         initBoard(); // Oyun alanını başlatan metodu çağırır
     }
-
     private void initBoard() { // Oyun alanını başlatan metod
 
-        addKeyListener(new TAdapter()); // Klavye kontrolleri için bir dinleyici ekler
-        setFocusable(true); // Klavye kontrolleri için odaklanabilirliği açar
-
-        setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT)); // Oyun alanının boyutunu ayarlar
-        loadImages(); // Resimleri yükleyen metodu çağırır
-        initGame(); // Oyunu başlatan metodu çağırır
+        this.addKeyListener(new TAdapter()); // Klavye kontrolleri için bir dinleyici ekler
+        this.setFocusable(true); // Klavye kontrolleri için odaklanabilirliği açar
+        this.setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT)); // Oyun alanının boyutunu ayarlar
+        this.loadImages(); // Resimleri yükleyen metodu çağırır
+        this.initGame(); // Oyunu başlatan metodu çağırır
+        startScreen();
     }
+    public void startScreen() {
+        int result = JOptionPane.showOptionDialog(null,
+                " Yılan Oyununa hoş geldiniz :) \n",
+                "Giriş Ekranı",
+                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                new Object[]{"Oyuna Başla"},
+                "Oyuna Başla");
 
-    private void loadImages() { // Resimleri yükleyen metod
+        if (result == JOptionPane.YES_OPTION) {
+            // Eğer kullanıcı "Oyuna Başla" derse, oyun başlasın
+            timer.start();
+        } else {
+            // Eğer kullanıcı pencereyi kapatırsa, program kapatılır
+            System.exit(0);
+        }
+    }
+    private void gameOver(Graphics g) { // Oyun bittiğini gösteren metot
 
-        ImageIcon iib= new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources\\background.jpg");
-        bgImage= iib.getImage();
 
+        String msg = "KAYBETTİNİZ :("   ; // Oyun bittiğini belirten mesaj
+        String m_score = "PUANINIZ: "+ score;
+        Font small = new Font("İtalic", Font.BOLD, 20); // Mesajın fontu
+        FontMetrics metr = getFontMetrics(small); // Mesajın metrikleri
 
-        ImageIcon iid = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png"); // Yılanın her bir parçasının resmini yükler
-        ball = iid.getImage();
-
-        ImageIcon iia = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/appleV2.jpg"); // Yemin resmini yükler
-        apple = iia.getImage();
-
-        ImageIcon iip = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/pineAppleV2.png"); // Yemin resmini yükler
-        pineApple = iip.getImage();
-
-        ImageIcon iih = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/head.png"); // Yılanın başının resmini yükler
-        head = iih.getImage();
-
-        ImageIcon iibomb = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\2023GrafikYilan\\YilanGame\\src\\resources/bombv2.jpg"); // Yemin resmini yükler
-        bomb = iibomb.getImage();
+        g.setColor(Color.black); // Mesajın rengi
+        g.setFont(small); // Mesajın fontu
+        g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2); // Mesajı ekrana yazar
+        g.drawString(m_score, (B_WIDTH - metr.stringWidth(m_score)) / 2, (B_HEIGHT / 2)+20); // Mesajı ekrana yazar
 
     }
-
+    /*--------------------------------------------*/
     private void initGame() { // Oyunu başlatan metot
         score = 0; //BU SATIRI DAVUT EKLEDİ
         dots = 4; // Yılanın başlangıç uzunluğunu ayarlar
@@ -129,14 +135,12 @@ public class Board extends JPanel implements ActionListener {
         timer = new Timer(DELAY, this); // Zamanlayıcı nesnesini oluşturur ve gecikme süresi ve dinleyici olarak Board sınıfını verir
         timer.start(); // Zamanlayıcıyı başlatır
     }
-
     @Override
     public void paintComponent(Graphics g) { // Oyun alanını çizen metot
         super.paintComponent(g); // Üst sınıfın metodunu çağırır
         g.drawImage(bgImage, 0, 0,getWidth(),getHeight(),this);     //BU SATIRI DAVUT EKLEDİ
         doDrawing(g); // Oyun alanını çizen yardımcı metodu çağırır
     }
-
     private void doDrawing(Graphics g) { // Oyun alanını çizen yardımcı metot
 
         if (inGame) { // Eğer oyun devam ediyorsa
@@ -169,49 +173,6 @@ public class Board extends JPanel implements ActionListener {
             gameOver(g); // Oyun bittiğini gösteren metodu çağırır
         }
     }
-
-    private void gameOver(Graphics g) { // Oyun bittiğini gösteren metot
-
-        String msg = "KAYBETTİNİZ :("   ; // Oyun bittiğini belirten mesaj
-        String m_score = "PUANINIZ: "+ score;
-        Font small = new Font("İtalic", Font.BOLD, 20); // Mesajın fontu
-        FontMetrics metr = getFontMetrics(small); // Mesajın metrikleri
-
-        g.setColor(Color.black); // Mesajın rengi
-        g.setFont(small); // Mesajın fontu
-        g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2); // Mesajı ekrana yazar
-        g.drawString(m_score, (B_WIDTH - metr.stringWidth(m_score)) / 2, (B_HEIGHT / 2)+20); // Mesajı ekrana yazar
-
-    }
-
-    private void checkApple() { // Yılanın yemi yiyip yemediğini kontrol eden metot
-
-        if ((x[0] == apple_x) && (y[0] == apple_y)) { // Eğer yemi yemişse
-
-            dots++; // Yılanın uzunluğunu arttırır
-            score += 10;    //BU SATIRI DAVUT EKLEDİ
-            locateApple(); // Yeni bir yem konumu belirler
-        }
-    }
-
-    private void checkPineApple() { // Yılanın yemi yiyip yemediğini kontrol eden metot
-
-        if ((x[0] == pineApple_x) && (y[0] == pineApple_y)) { // Eğer yemi yemişse
-
-            dots+=3; // Yılanın uzunluğunu arttırır
-            score +=30;    //BU SATIRI DAVUT EKLEDİ
-            locatePineApple(); // Yeni bir yem konumu belirler
-        }
-    }
-
-    private void checkBomb() { // Yılanın yemi yiyip yemediğini kontrol eden metot
-
-        if ((x[0] == bomb_x) && (y[0] == bomb_y)) { // Eğer yemi yemişse
-            inGame =false;
-            locatePineApple(); // Yeni bir yem konumu belirler
-        }
-    }
-
     private void move() { // Yılanın hareket etmesini sağlayan metot
 
         for (int z = dots; z > 0; z--) { // Yılanın parçalarının koordinatlarını günceller
@@ -235,13 +196,14 @@ public class Board extends JPanel implements ActionListener {
             y[0] += DOT_SIZE; // Başının y koordinatını arttırır
         }
     }
-
     private void checkCollision() { // Yılanın kendisine veya duvarlara çarpmasını kontrol eden metot
 
         for (int z = dots; z > 0; z--) { // Yılanın her bir parçası için
 
-            if ((z > 0) && (x[0] == x[z]) && (y[0] == y[z])) { // Eğer baş, vücudun bir parçasına çarpmışsa
-                inGame = false; // Oyunu bitirir
+            if ((z > 4) && (x[0] == x[z]) && (y[0] == y[z])) { // Eğer baş, vücudun bir parçasına çarpmışsa
+                inGame = false;// Oyunu bitirir
+                playSound("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/bomba.wav");
+
             }
         }
 
@@ -265,7 +227,29 @@ public class Board extends JPanel implements ActionListener {
             timer.stop(); // Zamanlayıcıyı durdurur
         }
     }
+    /*--------------------------------------------*/
+    private void loadImages() { // Resimleri yükleyen metod
 
+        ImageIcon iib= new ImageIcon("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources\\background.jpg");
+        bgImage= iib.getImage();
+
+
+        ImageIcon iid = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/dot.png"); // Yılanın her bir parçasının resmini yükler
+        ball = iid.getImage();
+
+        ImageIcon iia = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/appleV2.jpg"); // Yemin resmini yükler
+        apple = iia.getImage();
+
+        ImageIcon iip = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/pineAppleV2.png"); // Yemin resmini yükler
+        pineApple = iip.getImage();
+
+        ImageIcon iih = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/head.png"); // Yılanın başının resmini yükler
+        head = iih.getImage();
+
+        ImageIcon iibomb = new ImageIcon("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/bombv2.jpg"); // Yemin resmini yükler
+        bomb = iibomb.getImage();
+
+    }
     private void locateApple() { // Yemin konumunu rastgele belirleyen metot
 
         int r = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
@@ -290,6 +274,67 @@ public class Board extends JPanel implements ActionListener {
         n = (int) (Math.random() * RAND_POS); // 0 ile RAND_POS arasında rastgele bir sayı üretir
         bomb_y = ((n * DOT_SIZE)); // Yemin y koordinatını, yılanın boyutuna göre ayarlar
     }
+    private void checkApple() { // Yılanın yemi yiyip yemediğini kontrol eden metot
+
+        if ((x[0] == apple_x) && (y[0] == apple_y)) { // Eğer yemi yemişse
+
+            dots++; // Yılanın uzunluğunu arttırır
+            score += 10; // Yılan her yem yediğinde skoru 10 puan arttırır
+            locateApple(); // Yeni bir yem konumu belirler
+
+            playSound("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/yemeSesi.wav");
+        }
+    }
+    private void checkPineApple() { // Yılanın yemi yiyip yemediğini kontrol eden metot
+
+        if ((x[0] == pineApple_x) && (y[0] == pineApple_y)) { // Eğer yemi yemişse
+
+            dots+=3; // Yılanın uzunluğunu arttırır
+            score +=30;    //BU SATIRI DAVUT EKLEDİ
+            locatePineApple(); // Yeni bir yem konumu belirler
+            playSound("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/yemeSesi.wav");
+        }
+    }
+    private void checkBomb() { // Yılanın yemi yiyip yemediğini kontrol eden metot
+
+        if ((x[0] == bomb_x) && (y[0] == bomb_y)) { // Eğer yemi yemişse
+            inGame =false;
+            locatePineApple(); // Yeni bir yem konumu belirler
+            playSound("C:\\Users\\Ahmet\\Desktop\\Drive\\2023GrafikYilan\\YilanGame\\src\\resources/bomba.wav");
+        }
+    }
+    /*--------------------------------------------*/
+    private void playSound(String s) { // Ses dosyasını oynatan metot
+
+        try {
+            File soundFile = new File(s); // Ses dosyasını açar
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile); // Ses dosyasını AudioInputStream nesnesine dönüştürür
+            AudioFormat format = audioIn.getFormat(); // Ses dosyasının formatını alır
+            SourceDataLine line = AudioSystem.getSourceDataLine(format); // Ses dosyasının formatına uygun bir SourceDataLine nesnesi alır
+            line.open(format); // SourceDataLine nesnesini açar
+            line.start(); // SourceDataLine nesnesini başlatır
+            byte[] buffer = new byte[1024]; // Ses dosyasının verilerini tutmak için bir byte dizisi oluşturur
+            //int bytesRead = 0; // Okunan byte sayısını tutmak için bir değişken tanımlar
+
+            // Ses dosyasını oynatmak için yeni bir Thread oluşturur
+            new Thread(() -> {
+                try {
+                    while ((bytesRead = audioIn.read(buffer, 0, buffer.length)) != -1) { // AudioInputStream nesnesinden veri okur
+                        line.write(buffer, 0, bytesRead); // Okunan veriyi SourceDataLine nesnesine yazar
+                    }
+                    line.drain(); // SourceDataLine nesnesinin tamponunu boşaltır
+                    line.close(); // SourceDataLine nesnesini kapatır
+                    audioIn.close(); // AudioInputStream nesnesini serbest bırakır
+                } catch (Exception e) {
+                    e.printStackTrace(); // Hata olursa ekrana yazdırır
+                }
+            }).start(); // Thread'i başlatır
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Hata olursa ekrana yazdırır
+        }
+    }
+    /*--------------------------------------------*/
     @Override
     public void actionPerformed(ActionEvent e) { // Zamanlayıcıdan gelen olaylara yanıt veren metot
 
@@ -304,6 +349,7 @@ public class Board extends JPanel implements ActionListener {
 
         repaint(); // Oyun alanını yeniden çizen metodu çağırır
     }
+    /*--------------------------------------------*/
 
     private class TAdapter extends KeyAdapter { // Klavye kontrollerini sağlayan iç sınıf
 

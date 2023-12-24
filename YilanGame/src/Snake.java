@@ -1,6 +1,5 @@
-
-import java.awt.EventQueue;
-import javax.swing.JFrame;
+import javax.swing.*;
+import java.awt.*;
 
 public class Snake extends JFrame { // Snake sınıfı, JFrame sınıfından türetiliyor
 
@@ -14,9 +13,9 @@ public class Snake extends JFrame { // Snake sınıfı, JFrame sınıfından tü
 
         setResizable(false); // Pencerenin boyutunun değiştirilememesini sağlar
         pack(); // Pencerenin boyutunu içerdiği bileşenlere göre ayarlar
-
         setTitle("Yılan Oyunu"); // Pencerenin başlığını belirler
         setLocationRelativeTo(null); // Pencerenin ekranın ortasında konumlanmasını sağlar
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Pencere kapatıldığında programın sonlanmasını sağlar
     }
 
